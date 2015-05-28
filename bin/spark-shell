@@ -5,4 +5,9 @@ cd $SPARK_HOME
 export SPARK_MASTER_IP="${SPARK_MASTER_SERVICE_HOST:-${SPARK_MASTER_SERVICE_PORT_7077_TCP_ADDR:-$1}}"
 export SPARK_LOCAL_IP=`awk 'NR==1 {print $1}' /etc/hosts`
 
+# Remove docker alias from hosts
+sed '1d' /etc/hosts > tmpHosts
+cat tmpHosts > /etc/hosts
+rm tmpHosts
+
 ./bin/spark-shell --master spark://${SPARK_MASTER_IP}:${SPARK_MASTER_PORT} -i ${SPARK_LOCAL_IP} "$@"
