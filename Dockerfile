@@ -13,7 +13,7 @@ ENV SPARK_HOME /usr/local/spark
 # Download and compile Apache Spark
 RUN mkdir /src && \
     cd /src && \
-    wget http://apache-mirror.rbc.ru/pub/apache/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION.tgz && \
+    wget http://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION.tgz && \
     tar -xf spark-$SPARK_VERSION.tgz && \
     cd /src/spark-$SPARK_VERSION && \
     dev/change-version-to-2.11.sh && \
