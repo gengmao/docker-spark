@@ -1,12 +1,19 @@
 FROM java:8
 
-# Install maven
-RUN apt-get -y update && \
-    apt-get -y install maven && \
-    apt-get -y autoremove && \
-    rm -rf /var/lib/apt/lists/*
+# Set Maven vars
+ENV MAVEN_VERSION 3.0.5
+ENV MAVEN_HOME /usr/share/maven
 
-# Set base spark vars
+# Install Maven
+RUN mkdir /src && \
+    cd /src && \
+    wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+    tar -xf apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+    mv /src/apache-maven-$MAVEN_VERSION $MAVEN_HOME && \
+    ln -s $MAVEN_HOME/bin/mvn /usr/bin/mvn && \
+    rm -rf /src
+
+# Set base Spark vars
 ENV SPARK_VERSION 1.2.2
 ENV SPARK_HOME /usr/local/spark
 
