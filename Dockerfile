@@ -10,7 +10,7 @@ RUN mkdir /src && \
     wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && \
     tar -xf apache-maven-$MAVEN_VERSION-bin.tar.gz && \
     mv /src/apache-maven-$MAVEN_VERSION $MAVEN_HOME && \
-    ln -s $MAVEN_HOME/bin/mvn /usr/bin/mvn && \
+    ln -s $MAVEN_HOME/bin/mvn /usr/local/bin/mvn && \
     rm -rf /src
 
 # Set base Spark vars
