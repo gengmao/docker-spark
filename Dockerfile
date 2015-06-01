@@ -14,7 +14,7 @@ RUN mkdir /src && \
     rm -rf /src
 
 # Set base Spark vars
-ENV SPARK_VERSION 1.2.2
+ENV SPARK_VERSION 1.3.1
 ENV SPARK_HOME /usr/local/spark
 
 # Download and compile Apache Spark
