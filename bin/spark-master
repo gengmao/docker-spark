@@ -1,8 +1,13 @@
 #!/bin/sh
 
-cd /usr/local/spark
+cd $SPARK_HOME
 
 export SPARK_MASTER_IP=`awk 'NR==1 {print $1}' /etc/hosts`
+export SPARK_MASTER_PORT=${SPARK_MASTER_SERVICE_PORT:-7077}
+
 export SPARK_LOCAL_IP=`awk 'NR==1 {print $1}' /etc/hosts`
 
-./bin/spark-class org.apache.spark.deploy.master.Master -i $SPARK_LOCAL_IP
+# Name resolution for spark-master
+echo "$SPARK_MASTER_IP spark-master" >> /etc/hosts
+
+./bin/spark-class org.apache.spark.deploy.master.Master --ip spark-master
