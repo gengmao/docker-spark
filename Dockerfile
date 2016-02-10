@@ -1,7 +1,7 @@
-FROM java:8
+FROM java:7
 
 # Set Maven vars
-ENV MAVEN_VERSION 3.0.5
+ENV MAVEN_VERSION 3.3.9
 ENV MAVEN_HOME /usr/share/maven
 
 # Install Maven
@@ -14,8 +14,9 @@ RUN mkdir /src && \
     rm -rf /src
 
 # Set base Spark vars
-ENV SPARK_VERSION 1.4.1
-ENV SPARK_HOME /usr/local/spark
+ENV SPARK_VERSION 1.6.0
+ENV SPARK_HOME /opt/spark
+ENV MESOS_VERSION 0.25.0-0.2.70.ubuntu1404
 
 # Download and compile Apache Spark
 RUN mkdir /src && \
@@ -24,25 +25,16 @@ RUN mkdir /src && \
     tar -xf spark-$SPARK_VERSION.tgz && \
     cd /src/spark-$SPARK_VERSION && \
     dev/change-version-to-2.11.sh && \
-    JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 ./make-distribution.sh --name spark --skip-java-test -Dscala-2.11 && \
+    JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 ./make-distribution.sh -Phadoop-2.6 -Phive -Phive-thriftserver -Dscala-2.11 -DskipTests && \
     mv dist $SPARK_HOME && \
     rm -rf /src /root/*
 
-# Add Spark configs
-ADD conf/spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
+# Download Apache Mesos
+RUN echo "deb http://repos.mesosphere.io/ubuntu/ trusty main" > /etc/apt/sources.list.d/mesosphere.list && \
+  apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF && \
+  apt-get -y update && \
+  apt-get -y install mesos=$MESOS_VERSION && \
+  apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Add Spark startup scripts
-ADD bin/spark-master /usr/local/bin/spark-master
-ADD bin/spark-worker /usr/local/bin/spark-worker
-ADD bin/spark-shell  /usr/local/bin/spark-shell
+ENV MESOS_NATIVE_JAVA_LIBRARY /usr/local/lib/libmesos.so
 
-# Set misc Spark vars
-ENV SPARK_MASTER_OPTS="-Dspark.driver.port=7001 -Dspark.fileserver.port=7002 -Dspark.broadcast.port=7003 -Dspark.replClassServer.port=7004 -Dspark.blockManager.port=7005 -Dspark.executor.port=7006 -Dspark.ui.port=4040 -Dspark.broadcast.factory=org.apache.spark.broadcast.HttpBroadcastFactory"
-ENV SPARK_WORKER_OPTS="-Dspark.driver.port=7001 -Dspark.fileserver.port=7002 -Dspark.broadcast.port=7003 -Dspark.replClassServer.port=7004 -Dspark.blockManager.port=7005 -Dspark.executor.port=7006 -Dspark.ui.port=4040 -Dspark.broadcast.factory=org.apache.spark.broadcast.HttpBroadcastFactory"
-
-ENV SPARK_MASTER_PORT 7077
-ENV SPARK_MASTER_WEBUI_PORT 8080
-ENV SPARK_WORKER_PORT 8888
-ENV SPARK_WORKER_WEBUI_PORT 8081
-
-EXPOSE 8080 7077 8888 8081 4040 7001 7002 7003 7004 7005 7006
