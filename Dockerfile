@@ -14,9 +14,9 @@ RUN mkdir /src && \
     rm -rf /src
 
 # Set base Spark vars
-ENV SPARK_VERSION 1.6.0
+ENV SPARK_VERSION 1.6.2
 ENV SPARK_HOME /opt/spark
-ENV MESOS_VERSION 0.25.0-0.2.70.ubuntu1404
+ENV MESOS_VERSION 0.28.2-2.0.27.ubuntu1404
 
 # Download and compile Apache Spark
 RUN mkdir /src && \
